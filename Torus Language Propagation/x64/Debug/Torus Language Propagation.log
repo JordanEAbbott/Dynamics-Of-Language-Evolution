@@ -1,0 +1,8 @@
+﻿  ProcessController.cpp
+C:\Users\jorda\source\repos\Dynamics-Of-Language-Evolution\Torus Language Propagation\ProcessController.cpp(14,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Main.cpp
+C:\Users\jorda\source\repos\Dynamics-Of-Language-Evolution\Torus Language Propagation\Main.cpp(11,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jorda\source\repos\Dynamics-Of-Language-Evolution\Torus Language Propagation\Main.cpp(12,36): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jorda\source\repos\Dynamics-Of-Language-Evolution\Torus Language Propagation\Main.cpp(28,30): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
+  Torus Language Propagation.vcxproj -> C:\Users\jorda\source\repos\Dynamics-Of-Language-Evolution\Torus Language Propagation\x64\Debug\Torus Language Propagation.exe
