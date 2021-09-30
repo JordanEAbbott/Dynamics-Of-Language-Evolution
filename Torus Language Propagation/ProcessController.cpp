@@ -5,7 +5,7 @@
 #include <fstream>
 
 std::vector<Language*> createDummyVector() {
-    Language* dummyL = new Language{ true, {nullptr, nullptr, nullptr, nullptr}, -1 };
+    Language* dummyL = new Language( true, {nullptr, nullptr, nullptr, nullptr}, -1 );
     return { dummyL, dummyL, dummyL, dummyL };
 }
 
@@ -15,7 +15,7 @@ ProcessController::ProcessController(int size) {
     staticLanguages.resize(size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            Language* l = new Language{ ((double)rand() / (RAND_MAX)) > 0.5, createDummyVector(), size * i + j };
+            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, createDummyVector(), size * i + j );
             staticLanguages[i].push_back(*l);
         }
     }
@@ -47,23 +47,55 @@ double ProcessController::calculateSigma() {
     return (double)count / (2 * size * size);
 }
 
+void ProcessController::verticalEvent(Language* language) {
+    
+    double rnd = (double)rand() / RAND_MAX;
+    if (language->feature && rnd < language->verticalIngress) {
+        language->feature ^= 1;
+    }
+    else if (!language->feature && rnd < language->verticalEgress) {
+        language->feature ^= 1;
+    }
+}
+
+void ProcessController::horizontalEvent(Language* language) {
+
+    Language* neighbour = language->neighbours[rand() % 4];
+    double rnd = (double)rand() / RAND_MAX;
+
+    if (neighbour->feature) {
+        language->feature = (rnd > language->horizontalEgress);
+    }
+    else {
+        language->feature = !(rnd > language->horizontalIngress);
+    }
+}
+
 void ProcessController::runProcess(int iterations) {
 
     languages = staticLanguages;
     std::vector<double> sigmaProcess;
     for (int i = 0; i < iterations; i++) {
-        int pointId = rand() % (size * size);
-        int neighbour = rand() % 4;
-        int col = pointId % size;
-        int row = (pointId - col) / size;  // (i * size) + j = pointid
 
-        languages[row][col].feature = languages[row][col].neighbours[neighbour]->feature;
+        int pointId = rand() % (size * size);
+        int col = pointId % size;
+        int row = (pointId - col) / size; // (i * size) + j = pointId
+        double rnd = (double)rand() / RAND_MAX;
+
+        Language* chosenLanguage = &languages[row][col];
+
+        if (rnd < chosenLanguage->relativeRate) {
+            verticalEvent(chosenLanguage);
+        }
+        else {
+            horizontalEvent(chosenLanguage);
+        }
 
         if (i % (size * size) == 0) {
             sigmaProcess.push_back(calculateSigma());
         }
     }
-    
+
     sigma.push_back(sigmaProcess);
 }
 

@@ -15,6 +15,9 @@ public:
 private:
 	~ProcessController();
 
+	void verticalEvent(Language* language);
+	void horizontalEvent(Language* language);
+
 	std::vector<std::vector<Language>> staticLanguages;
 	std::vector<std::vector<Language>> languages;
 	std::vector<std::vector<double>> sigma;
