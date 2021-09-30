@@ -5,17 +5,21 @@
 #include <fstream>
 
 std::vector<Language*> createDummyVector() {
-    Language* dummyL = new Language( true, {nullptr, nullptr, nullptr, nullptr}, -1 );
+    Language* dummyL = new Language( true, nullptr, {nullptr, nullptr, nullptr, nullptr}, -1 );
     return { dummyL, dummyL, dummyL, dummyL };
 }
 
 ProcessController::ProcessController(int size) {
 
     srand(time(NULL));
+    Feature* feature = new Feature();
+
+    // Use feature->setRates() to set ingress and egress rates here
+
     staticLanguages.resize(size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, createDummyVector(), size * i + j );
+            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, feature, createDummyVector(), size * i + j );
             staticLanguages[i].push_back(*l);
         }
     }
@@ -50,11 +54,11 @@ double ProcessController::calculateSigma() {
 void ProcessController::verticalEvent(Language* language) {
     
     double rnd = (double)rand() / RAND_MAX;
-    if (language->feature && rnd < language->verticalIngress) {
-        language->feature ^= 1;
+    if (language->feature && rnd < language->feature->verticalIngress) {
+        language->featureActive ^= 1;
     }
-    else if (!language->feature && rnd < language->verticalEgress) {
-        language->feature ^= 1;
+    else if (!language->feature && rnd < language->feature->verticalEgress) {
+        language->featureActive ^= 1;
     }
 }
 
@@ -64,10 +68,10 @@ void ProcessController::horizontalEvent(Language* language) {
     double rnd = (double)rand() / RAND_MAX;
 
     if (neighbour->feature) {
-        language->feature = (rnd > language->horizontalEgress);
+        language->featureActive = (rnd > language->feature->horizontalEgress);
     }
     else {
-        language->feature = !(rnd > language->horizontalIngress);
+        language->featureActive = !(rnd > language->feature->horizontalIngress);
     }
 }
 
@@ -84,7 +88,7 @@ void ProcessController::runProcess(int iterations) {
 
         Language* chosenLanguage = &languages[row][col];
 
-        if (rnd < chosenLanguage->relativeRate) {
+        if (rnd < chosenLanguage->feature->relativeRate) {
             verticalEvent(chosenLanguage);
         }
         else {
