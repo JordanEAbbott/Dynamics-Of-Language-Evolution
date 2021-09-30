@@ -37,7 +37,7 @@ inline int Language::neighbourDifferences() {
 
     int count = 0;
     for (int neighbour = 0; neighbour < 4; neighbour++) {
-        if (feature != neighbours[neighbour]->feature) {
+        if (featureActive != neighbours[neighbour]->featureActive) {
             count++;
         }
     }

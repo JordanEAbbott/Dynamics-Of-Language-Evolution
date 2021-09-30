@@ -54,10 +54,10 @@ double ProcessController::calculateSigma() {
 void ProcessController::verticalEvent(Language* language) {
     
     double rnd = (double)rand() / RAND_MAX;
-    if (language->feature && rnd < language->feature->verticalIngress) {
+    if (language->featureActive && rnd < language->feature->verticalIngress) {
         language->featureActive ^= 1;
     }
-    else if (!language->feature && rnd < language->feature->verticalEgress) {
+    else if (!language->featureActive && rnd < language->feature->verticalEgress) {
         language->featureActive ^= 1;
     }
 }
@@ -67,7 +67,7 @@ void ProcessController::horizontalEvent(Language* language) {
     Language* neighbour = language->neighbours[rand() % 4];
     double rnd = (double)rand() / RAND_MAX;
 
-    if (neighbour->feature) {
+    if (neighbour->featureActive) {
         language->featureActive = (rnd > language->feature->horizontalEgress);
     }
     else {
