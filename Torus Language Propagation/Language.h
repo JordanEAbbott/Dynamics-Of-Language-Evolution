@@ -1,9 +1,7 @@
 #pragma once
 #include <vector>
 
-struct Language {
-	bool feature;
-	std::vector<Language*> neighbours;
+struct Feature {
 
     double verticalIngress = 0.5;
     double verticalEgress = 0.5;
@@ -13,14 +11,23 @@ struct Language {
 
     double relativeRate = 0.5;
 
-	int id;
-
-    Language(bool feature, std::vector<Language*> neighbours, int id);
-	int neighbourDifferences();
     void setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate);
 };
 
-inline Language::Language(bool f, std::vector<Language*> neighbourPointers, int i) {
+struct Language {
+
+	bool featureActive;
+    Feature* feature;
+	std::vector<Language*> neighbours;
+
+	int id;
+
+    Language(bool featureActive, Feature* feature, std::vector<Language*> neighbours, int id);
+	int neighbourDifferences();
+};
+
+inline Language::Language(bool fActive, Feature* f, std::vector<Language*> neighbourPointers, int i) {
+    featureActive = fActive;
     feature = f;
     neighbours = neighbourPointers;
     id = i;
@@ -30,14 +37,14 @@ inline int Language::neighbourDifferences() {
 
     int count = 0;
     for (int neighbour = 0; neighbour < 4; neighbour++) {
-        if (feature != neighbours[neighbour]->feature) {
+        if (featureActive != neighbours[neighbour]->featureActive) {
             count++;
         }
     }
     return count;
 }
 
-inline void Language::setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate) {
+inline void Feature::setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate) {
 
     verticalIngress = vIngress;
     verticalEgress = vEgress;
