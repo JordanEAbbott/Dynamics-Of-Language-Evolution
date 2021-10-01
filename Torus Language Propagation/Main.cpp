@@ -10,7 +10,7 @@
 int main()
 {
 
-    int realisations = 100;
+    int realisations = 5;
     ProcessController* PC = new ProcessController(100);
 
     for (int i = 0; i < realisations; i++) {
