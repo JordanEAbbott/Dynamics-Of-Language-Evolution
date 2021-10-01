@@ -12,14 +12,12 @@ std::vector<Language*> createDummyVector() {
 ProcessController::ProcessController(int size) {
 
     srand(time(NULL));
-    Feature* feature = new Feature();
-
-    // Use feature->setRates() to set ingress and egress rates here
+    features.push_back(new Feature());
 
     staticLanguages.resize(size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, feature, createDummyVector(), size * i + j );
+            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, features[0], createDummyVector(), size * i + j );
             staticLanguages[i].push_back(*l);
         }
     }
@@ -49,6 +47,18 @@ double ProcessController::calculateSigma() {
     }
 
     return (double)count / (2 * size * size);
+}
+
+double ProcessController::featureFrequency() {
+
+    int count = 0;
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            count = count + languages[i][j].featureActive;
+        }
+    }
+    
+    return (double)count / (size * size);
 }
 
 void ProcessController::verticalEvent(Language* language) {
@@ -81,6 +91,10 @@ void ProcessController::runProcess(int iterations) {
     std::vector<double> sigmaProcess;
     for (int i = 0; i < iterations; i++) {
 
+        for (int feature = 0; feature < features.size(); feature++) {
+            features[feature]->randomizeRates();
+        }
+
         int pointId = rand() % (size * size);
         int col = pointId % size;
         int row = (pointId - col) / size; // (i * size) + j = pointId
@@ -101,10 +115,29 @@ void ProcessController::runProcess(int iterations) {
     }
 
     sigma.push_back(sigmaProcess);
+    finalSigma.push_back(sigmaProcess.back());
+    fFrequency.push_back(this->featureFrequency());
+    fTemperature.push_back(features[0]->temperature);
 }
 
 std::vector<std::vector<double>> ProcessController::getSigma() {
     return sigma;
+}
+
+std::vector<Feature*> ProcessController::getFeatures() {
+    return features;
+}
+
+std::vector<double> ProcessController::getFrequency() {
+    return fFrequency;
+}
+
+std::vector<double> ProcessController::getTemperature() {
+    return fTemperature;
+}
+
+std::vector<double> ProcessController::getFinalSigma() {
+    return finalSigma;
 }
 
 std::vector<double> ProcessController::getSigmaAt(int position) {

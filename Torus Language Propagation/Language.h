@@ -11,8 +11,41 @@ struct Feature {
 
     double relativeRate = 0.5;
 
+    double temperature;
+
+    Feature();
     void setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate);
+    void randomizeRates();
 };
+
+inline Feature::Feature() {
+
+    randomizeRates();
+}
+
+inline void Feature::setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate) {
+
+    verticalIngress = vIngress;
+    verticalEgress = vEgress;
+
+    horizontalIngress = hIngress;
+    horizontalEgress = hEgress;
+
+    relativeRate = rRate;
+}
+
+inline void Feature::randomizeRates() {
+
+    verticalIngress = (double)rand() / RAND_MAX;
+    verticalEgress = ((double)rand() / RAND_MAX) * (1 - verticalIngress);
+
+    horizontalIngress = (double)rand() / RAND_MAX * 0.5;
+    horizontalEgress = (double)rand() / RAND_MAX * (1 - horizontalIngress) * 0.5;
+
+    relativeRate = (double)rand() / RAND_MAX;
+
+    temperature = ((1 - relativeRate) * (verticalIngress + verticalEgress) + relativeRate * (horizontalIngress + horizontalEgress)) / (relativeRate * (1 - horizontalIngress - horizontalEgress));
+}
 
 struct Language {
 
@@ -42,15 +75,4 @@ inline int Language::neighbourDifferences() {
         }
     }
     return count;
-}
-
-inline void Feature::setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate) {
-
-    verticalIngress = vIngress;
-    verticalEgress = vEgress;
-
-    horizontalIngress = hIngress;
-    horizontalEgress = hEgress;
-
-    relativeRate = rRate;
 }
