@@ -23,16 +23,20 @@ std::vector<double> averageVector(std::vector<std::vector<double>> vector) {
     return averagedVector;
 }
 
-void outputVector(std::vector<double> vector, std::string fileName) {
+void outputVector(std::vector<std::vector<double>> vector, std::string fileName) {
 
     int length = vector.size();
-    std::ofstream sigmaFilestream;
+    std::ofstream Filestream;
 
-    sigmaFilestream.open(fileName + ".csv");
-    for (int i = 0; i < length; i++) {
-        sigmaFilestream << i << "," << vector[i] << std::endl;
+    Filestream.open(fileName + ".csv");
+    for (int i = 0; i < vector[0].size(); i++) {
+        Filestream << i << ",";
+        for (int j = 0; j < length; j++) {
+            Filestream << vector[j][i] << ",";
+        }
+        Filestream << std::endl;
     }
-    sigmaFilestream.close();
+    Filestream.close();
 }
 
 double ellipticalIntegralFirstKind(std::vector<double> z, double u, double v) {
