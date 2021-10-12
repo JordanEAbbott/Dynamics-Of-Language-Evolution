@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
-
+///
+/// Feature struct and member functions
+///
 struct Feature {
 
     double verticalIngress = 0.5;
@@ -23,6 +25,9 @@ inline Feature::Feature() {
     randomizeRates();
 }
 
+//Want to produce frequencies in (0, 1) subject to the constraint tau = T
+    
+
 inline void Feature::setRates(double vIngress, double vEgress, double hIngress, double hEgress, double rRate) {
 
     verticalIngress = vIngress;
@@ -32,6 +37,8 @@ inline void Feature::setRates(double vIngress, double vEgress, double hIngress, 
     horizontalEgress = hEgress;
 
     relativeRate = rRate;
+
+    temperature = ((1 - relativeRate) * (verticalIngress + verticalEgress) + relativeRate * (horizontalIngress + horizontalEgress)) / (relativeRate * (1 - horizontalIngress - horizontalEgress));
 }
 
 inline void Feature::randomizeRates() {
@@ -46,7 +53,9 @@ inline void Feature::randomizeRates() {
 
     temperature = ((1 - relativeRate) * (verticalIngress + verticalEgress) + relativeRate * (horizontalIngress + horizontalEgress)) / (relativeRate * (1 - horizontalIngress - horizontalEgress));
 }
-
+///
+/// Language struct and member functions
+///
 struct Language {
 
 	bool featureActive;
