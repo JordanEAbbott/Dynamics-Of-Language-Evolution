@@ -18,16 +18,16 @@ ProcessController::ProcessController(int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, features[0], createDummyVector(), size * i + j );
-            staticLanguages[i].push_back(*l);
+            staticLanguages[i].push_back(l);
         }
     }
 
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            staticLanguages[i][j].neighbours[0] = &staticLanguages[(size + i - 1) % size][j];
-            staticLanguages[i][j].neighbours[1] = &staticLanguages[i][(j + 1) % size];
-            staticLanguages[i][j].neighbours[2] = &staticLanguages[(i + 1) % size][j];
-            staticLanguages[i][j].neighbours[3] = &staticLanguages[i][(size + j - 1) % size];
+            staticLanguages[i][j]->neighbours[0] = staticLanguages[(size + i - 1) % size][j];
+            staticLanguages[i][j]->neighbours[1] = staticLanguages[i][(j + 1) % size];
+            staticLanguages[i][j]->neighbours[2] = staticLanguages[(i + 1) % size][j];
+            staticLanguages[i][j]->neighbours[3] = staticLanguages[i][(size + j - 1) % size];
         }
     }
     this->size = size;
@@ -42,7 +42,7 @@ double ProcessController::calculateSigma() {
     int count = 0;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j = j + 2) {
-            count = count + languages[i][j].neighbourDifferences();
+            count = count + languages[i][j]->neighbourDifferences();
         }
     }
 
@@ -54,7 +54,7 @@ double ProcessController::featureFrequency() {
     int count = 0;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            count = count + languages[i][j].featureActive;
+            count = count + languages[i][j]->featureActive;
         }
     }
     
@@ -91,22 +91,18 @@ void ProcessController::runProcess(int iterations) {
     std::vector<double> sigmaProcess;
     for (int i = 0; i < iterations; i++) {
 
-        for (int feature = 0; feature < features.size(); feature++) {
-            features[feature]->randomizeRates();
-        }
-
         int pointId = rand() % (size * size);
         int col = pointId % size;
         int row = (pointId - col) / size; // (i * size) + j = pointId
         double rnd = (double)rand() / RAND_MAX;
 
-        Language* chosenLanguage = &languages[row][col];
+        // Language* chosenLanguage = languages[row][col];
 
-        if (rnd < chosenLanguage->feature->relativeRate) {
-            verticalEvent(chosenLanguage);
+        if (rnd > languages[row][col]->feature->relativeRate) {
+            verticalEvent(languages[row][col]);
         }
         else {
-            horizontalEvent(chosenLanguage);
+            horizontalEvent(languages[row][col]);
         }
 
         if (i % (size * size) == 0) {
