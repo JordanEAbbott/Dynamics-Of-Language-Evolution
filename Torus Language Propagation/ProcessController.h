@@ -8,6 +8,7 @@ public:
 	ProcessController(int size);
 
 	void runProcess(int iterations);
+	void clearVectors();
 	double calculateSigma();
 	std::vector<std::vector<double>> getSigma();
 	std::vector<Feature*> getFeatures();
@@ -21,10 +22,11 @@ private:
 
 	void verticalEvent(Language* language);
 	void horizontalEvent(Language* language);
+	void resetGrid();
+	void initialiseGrid();
 
 	double featureFrequency();
 
-	std::vector<std::vector<Language*>> staticLanguages;
 	std::vector<std::vector<Language*>> languages;
 	std::vector<std::vector<double>> sigma;
 	std::vector<Feature*> features;

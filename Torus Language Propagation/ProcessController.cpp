@@ -13,23 +13,7 @@ ProcessController::ProcessController(int size) {
 
     srand(time(NULL));
     features.push_back(new Feature());
-
-    staticLanguages.resize(size);
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            Language* l = new Language( ((double)rand() / (RAND_MAX)) > 0.5, features[0], createDummyVector(), size * i + j );
-            staticLanguages[i].push_back(l);
-        }
-    }
-
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            staticLanguages[i][j]->neighbours[0] = staticLanguages[(size + i - 1) % size][j];
-            staticLanguages[i][j]->neighbours[1] = staticLanguages[i][(j + 1) % size];
-            staticLanguages[i][j]->neighbours[2] = staticLanguages[(i + 1) % size][j];
-            staticLanguages[i][j]->neighbours[3] = staticLanguages[i][(size + j - 1) % size];
-        }
-    }
+    languages.resize(size);
     this->size = size;
 }
 
@@ -61,13 +45,32 @@ double ProcessController::featureFrequency() {
     return (double)count / (size * size);
 }
 
+void ProcessController::initialiseGrid() {
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            Language* l = new Language(((double)rand() / (RAND_MAX)) > 0.5, features[0], createDummyVector(), size * i + j);
+            languages[i].push_back(l);
+        }
+    }
+
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            languages[i][j]->neighbours[0] = languages[(size + i - 1) % size][j];
+            languages[i][j]->neighbours[1] = languages[i][(j + 1) % size];
+            languages[i][j]->neighbours[2] = languages[(i + 1) % size][j];
+            languages[i][j]->neighbours[3] = languages[i][(size + j - 1) % size];
+        }
+    }
+}
+
 void ProcessController::verticalEvent(Language* language) {
     
     double rnd = (double)rand() / RAND_MAX;
-    if (language->featureActive && rnd < language->feature->verticalIngress) {
+    if (language->featureActive && rnd < language->feature->verticalEgress) {
         language->featureActive ^= 1;
     }
-    else if (!language->featureActive && rnd < language->feature->verticalEgress) {
+    else if (!language->featureActive && rnd < language->feature->verticalIngress) {
         language->featureActive ^= 1;
     }
 }
@@ -87,7 +90,7 @@ void ProcessController::horizontalEvent(Language* language) {
 
 void ProcessController::runProcess(int iterations) {
 
-    languages = staticLanguages;
+    resetGrid();
     std::vector<double> sigmaProcess;
     for (int i = 0; i < iterations; i++) {
 
@@ -116,6 +119,13 @@ void ProcessController::runProcess(int iterations) {
     fTemperature.push_back(features[0]->temperature);
 }
 
+void ProcessController::clearVectors() {
+    sigma.clear();
+    finalSigma.clear();
+    fFrequency.clear();
+    fTemperature.clear();
+}
+
 std::vector<std::vector<double>> ProcessController::getSigma() {
     return sigma;
 }
@@ -138,4 +148,10 @@ std::vector<double> ProcessController::getFinalSigma() {
 
 std::vector<double> ProcessController::getSigmaAt(int position) {
     return sigma[position];
+}
+
+void ProcessController::resetGrid() {
+    languages.clear();
+    languages.resize(size);
+    initialiseGrid();
 }
