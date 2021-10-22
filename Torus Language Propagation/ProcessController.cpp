@@ -9,10 +9,12 @@ std::vector<Language*> createDummyVector() {
     return { dummyL, dummyL, dummyL, dummyL };
 }
 
-ProcessController::ProcessController(int size) {
+ProcessController::ProcessController(int size, int features) {
 
     srand(time(NULL));
-    features.push_back(new Feature());
+    while (this->features.size() < features) {
+        this->features.push_back(new Feature());
+    }
     languages.resize(size);
     this->size = size;
 }
@@ -124,6 +126,20 @@ void ProcessController::clearVectors() {
     finalSigma.clear();
     fFrequency.clear();
     fTemperature.clear();
+}
+
+void ProcessController::outputFeatures() {
+    int length = languages.size();
+    std::ofstream Filestream;
+
+    Filestream.open("feature.csv");
+    for (int i = 0; i < languages[0].size(); i++) {
+        for (int j = 0; j < length; j++) {
+            Filestream << languages[j][i]->featureActive << ",";
+        }
+        Filestream << std::endl;
+    }
+    Filestream.close();
 }
 
 std::vector<std::vector<double>> ProcessController::getSigma() {

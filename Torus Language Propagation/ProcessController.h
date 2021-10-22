@@ -5,11 +5,14 @@
 class ProcessController {
 
 public:
-	ProcessController(int size);
+	ProcessController(int size, int features);
 
 	void runProcess(int iterations);
-	void clearVectors();
 	double calculateSigma();
+
+	void clearVectors();
+	void outputFeatures();
+
 	std::vector<std::vector<double>> getSigma();
 	std::vector<Feature*> getFeatures();
 	std::vector<double> getFrequency();
