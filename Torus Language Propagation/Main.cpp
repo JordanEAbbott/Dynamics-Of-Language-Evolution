@@ -23,26 +23,18 @@ std::vector<std::vector<double>> generateValues(double temperature) {
 
 int main()
 {
+    // 0.5756
 
     int realisations = 5;
-    ProcessController* PC = new ProcessController(50);
+    ProcessController* PC = new ProcessController(50, 2);
 
-    std::vector<std::vector<double>> v = generateValues(0.001 * pow(10, t - 1));
-    std::vector<double> fSigma(10);
-    std::vector<double> fFreq(10);
-    for (int j = 0; j < 10; j++) {
-        PC->getFeatures()[0]->setRates(v[j][0], v[j][1], 0, 0, 0.5);
-        for (int i = 0; i < realisations; i++) {
-            PC->runProcess(10000000);
-            std::cout << "Finished Process " << j * 5 + i << std::endl;
-        }
-        fSigma[j] = averageVector(PC->getSigma()).back();
-        fFreq[j] = PC->getFrequency().back();
-        PC->clearVectors();
-    }
-    outputVector({ fSigma, fFreq }, "isogloss");
-    fSigma.clear();
-    fFreq.clear();
+    std::vector<std::vector<double>> v = generateValues(0.1);
+    PC->getFeatures()[0]->setRates(v[5][0], v[5][1], 0, 0, 0.5);
+    PC->runProcess(1000000);
+    std::cout << "Finished Process" << std::endl;
+    std::cout << PC->getFrequency().back();
+    PC->outputFeatures();
+    PC->clearVectors();
 
     // Output sigma graphs
     /*
